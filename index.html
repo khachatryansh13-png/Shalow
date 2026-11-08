@@ -1,0 +1,502 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>SHALLOW Vocal Lab</title>
+<style>
+:root {
+  font-family: -apple-system, Arial, sans-serif;
+  color: #f8f8fc;
+  background: #0b1020;
+}
+* { box-sizing: border-box; }
+body { margin: 0; padding: 18px 14px 65px; }
+main { max-width: 650px; margin: auto; }
+h1 { font-size: 34px; margin: 12px 0 4px; }
+h2 { font-size: 18px; }
+p { line-height: 1.5; }
+small, .muted { color: #aab4ce; }
+header { text-align: center; margin-bottom: 24px; }
+.tag { color: #a9a3ff; letter-spacing: 3px; }
+.card {
+  background: #192137;
+  border: 1px solid #303a55;
+  border-radius: 20px;
+  padding: 18px;
+  margin: 14px 0;
+}
+button, .fileButton {
+  border: 0;
+  border-radius: 13px;
+  padding: 14px;
+  background: #6659eb;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+button:disabled { opacity: .4; }
+.secondary { background: #35415d; }
+.red { background: #b94558; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.controls button { flex: 1; }
+.line {
+  font-size: 25px;
+  line-height: 1.45;
+  font-weight: 700;
+  margin-top: 20px;
+}
+.phon {
+  font-size: 21px;
+  color: #b8a9ff;
+  line-height: 1.5;
+  margin-top: 18px;
+}
+.translation {
+  color: #c6cede;
+  margin: 15px 0 25px;
+}
+.word {
+  display: inline-block;
+  margin: 3px;
+  padding: 4px;
+  border-radius: 6px;
+  background: #28324e;
+}
+.good { background: #235c49; }
+.bad { background: #713a42; }
+audio { width: 100%; margin: 15px 0; }
+input[type=file] { width: 100%; margin-top: 12px; }
+.score {
+  font-size: 27px;
+  font-weight: bold;
+  color: #a5f2c5;
+}
+#note { font-size: 30px; color: #b8a9ff; }
+.status { color: #bac6dd; }
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="tag">VOCAL TRAINER</div>
+<h1>SHALLOW</h1>
+<p class="muted">Lady Gaga & Bradley Cooper</p>
+<p>Учи английский. Пой. Проверяй себя.</p>
+</header>
+
+<section class="card">
+<h2>Выбери часть песни</h2>
+<div class="controls">
+<button onclick="choose('bradley')">Брэдли</button>
+<button onclick="choose('gaga')">Гага</button>
+<button onclick="choose('chorus')">Припев</button>
+</div>
+</section>
+
+<section class="card">
+<small id="counter">Строка 1</small>
+<div id="lyric" class="line"></div>
+<div id="phon" class="phon"></div>
+<div id="translation" class="translation"></div>
+<div class="controls">
+<button class="secondary" onclick="move(-1)">Назад</button>
+<button onclick="move(1)">Дальше</button>
+</div>
+</section>
+
+<section class="card">
+<h2>Музыка на фоне</h2>
+<p class="muted">
+Выбери MP3 или M4A из приложения «Файлы».
+Лучше петь в наушниках.
+</p>
+<input type="file" id="musicFile" accept="audio/*">
+<audio id="music" controls></audio>
+</section>
+
+<section class="card">
+<h2>Проверка произношения</h2>
+<p class="muted">
+Нажми кнопку и спой текущую строку.
+Если браузер поддерживает распознавание речи,
+приложение проверит распознанные слова.
+</p>
+<button id="listen" onclick="listen()">Слушать мой голос</button>
+<p class="status" id="speechStatus">
+Ожидание
+</p>
+<div id="result"></div>
+<div id="score"></div>
+</section>
+
+<section class="card">
+<h2>Запись твоего исполнения</h2>
+<div class="controls">
+<button onclick="startRecording()">Записать</button>
+<button class="red" onclick="stopRecording()">Стоп</button>
+</div>
+<p class="status" id="recordStatus">
+Запись не начата
+</p>
+<audio id="playback" controls></audio>
+</section>
+
+<section class="card">
+<h2>Контроль голоса</h2>
+<p class="muted">
+Определение высоты твоей ноты в реальном времени.
+Это пока не сравнение с мелодией оригинала.
+</p>
+<button onclick="startPitch()">Включить микрофон</button>
+<button class="secondary" onclick="stopPitch()">Выключить</button>
+<p id="note">—</p>
+</section>
+
+<p class="muted">
+Для работы микрофона открой опубликованное
+приложение через HTTPS. Распознавание речи
+зависит от браузера и может быть недоступно
+в Safari.
+</p>
+</main>
+
+<script>
+const song = [
+{
+part:"bradley",
+en:"Tell me something, girl",
+ru:"Тэл ми са́мсин, гёрл",
+tr:"Скажи мне кое-что, девушка"
+},
+{
+part:"bradley",
+en:"Are you happy in this modern world?",
+ru:"Ар ю хэ́пи ин зис мо́дэрн уёрлд?",
+tr:"Ты счастлива в этом современном мире?"
+},
+{
+part:"bradley",
+en:"Or do you need more?",
+ru:"Ор ду ю нид моор?",
+tr:"Или тебе нужно что-то большее?"
+},
+{
+part:"bradley",
+en:"Is there something else you're searchin' for?",
+ru:"Из зэр са́мсин элс йор сё́рчин фор?",
+tr:"Есть ли что-то еще, что ты ищешь?"
+},
+{
+part:"bradley",
+en:"I'm falling",
+ru:"Айм фо́лин",
+tr:"Я падаю"
+},
+{
+part:"bradley",
+en:"In all the good times, I find myself longin' for change",
+ru:"Ин ол зэ гуд таймз, ай файнд майсе́лф ло́нгин фор чейндж",
+tr:"В хорошие времена я жажду перемен"
+},
+{
+part:"bradley",
+en:"And in the bad times, I fear myself",
+ru:"Энд ин зэ бэд таймз, ай фир майсе́лф",
+tr:"А в плохие времена я боюсь самого себя"
+},
+{
+part:"gaga",
+en:"Tell me something, boy",
+ru:"Тэл ми са́мсин, бой",
+tr:"Скажи мне кое-что, парень"
+},
+{
+part:"gaga",
+en:"Aren't you tired trying to fill that void?",
+ru:"А́рнт ю та́йэрд тра́йин ту фил зэт войд?",
+tr:"Ты не устал пытаться заполнить пустоту?"
+},
+{
+part:"gaga",
+en:"Or do you need more?",
+ru:"Ор ду ю нид моор?",
+tr:"Или тебе нужно больше?"
+},
+{
+part:"gaga",
+en:"Ain't it hard keeping it so hardcore?",
+ru:"Эйнт ит хард ки́пин ит со́у ха́рдкор?",
+tr:"Разве не трудно постоянно быть таким жестким?"
+},
+{
+part:"gaga",
+en:"I'm falling",
+ru:"Айм фо́лин",
+tr:"Я падаю"
+},
+{
+part:"gaga",
+en:"In all the good times, I find myself longing for change",
+ru:"Ин ол зэ гуд таймз, ай файнд майсе́лф ло́нгин фор чейндж",
+tr:"В хорошие времена я жажду перемен"
+},
+{
+part:"gaga",
+en:"And in the bad times, I fear myself",
+ru:"Энд ин зэ бэд таймз, ай фир майсе́лф",
+tr:"А в плохие времена я боюсь самой себя"
+},
+{
+part:"chorus",
+en:"I'm off the deep end, watch as I dive in",
+ru:"Айм оф зэ дип энд, уотч эз ай дайв ин",
+tr:"Я бросаюсь в глубину, смотри, как ныряю"
+},
+{
+part:"chorus",
+en:"I'll never meet the ground",
+ru:"Айл не́вэр мит зэ граунд",
+tr:"Я никогда не коснусь дна"
+},
+{
+part:"chorus",
+en:"Crash through the surface, where they can't hurt us",
+ru:"Крэш сру зэ сё́рфис, уэ́р зэй кэнт хёрт ас",
+tr:"Прорываемся сквозь поверхность, где нас не ранят"
+},
+{
+part:"chorus",
+en:"We're far from the shallow now",
+ru:"Уир фар фром зэ шэ́лоу нау",
+tr:"Теперь мы далеко от мелководья"
+},
+{
+part:"chorus",
+en:"In the sha-, shallow",
+ru:"Ин зэ ша, шэ́лоу",
+tr:"На мелководье"
+},
+{
+part:"chorus",
+en:"In the sha-ha-sha-la-la-la-llow",
+ru:"Ин зэ ша-ха-ша-ла-ла-ла-лоу",
+tr:"Вокальный повтор слова shallow"
+},
+{
+part:"chorus",
+en:"In the sha-ha, sha-ha-llow",
+ru:"Ин зэ ша-ха, ша-ха-лоу",
+tr:"Вокальный повтор"
+},
+{
+part:"chorus",
+en:"We're far from the shallow now",
+ru:"Уир фар фром зэ шэ́лоу нау",
+tr:"Теперь мы далеко от мелководья"
+}
+];
+
+let section = "bradley";
+let index = 0;
+let current = [];
+const $ = id => document.getElementById(id);
+
+function choose(part) {
+ section = part;
+ current = song.filter(x => x.part === part);
+ index = 0;
+ render();
+}
+
+function move(step) {
+ index = Math.max(0, Math.min(
+   current.length - 1, index + step
+ ));
+ render();
+}
+
+function render() {
+ const x = current[index];
+ $("counter").textContent =
+   `Строка ${index + 1} из ${current.length}`;
+ $("lyric").textContent = x.en;
+ $("phon").textContent = x.ru;
+ $("translation").textContent = x.tr;
+ $("result").textContent = "";
+ $("score").textContent = "";
+}
+
+$("musicFile").addEventListener("change", e => {
+ const file = e.target.files[0];
+ if (file) $("music").src = URL.createObjectURL(file);
+});
+
+const Recognition =
+ window.SpeechRecognition ||
+ window.webkitSpeechRecognition;
+
+function normalize(s) {
+ return s.toLowerCase()
+   .replace(/[^a-z\s]/g, "")
+   .trim().split(/\s+/).filter(Boolean);
+}
+
+function listen() {
+ if (!Recognition) {
+   $("speechStatus").textContent =
+    "В этом браузере автоматическое распознавание недоступно.";
+   return;
+ }
+ const expected = normalize(current[index].en);
+ const rec = new Recognition();
+ rec.lang = "en-US";
+ rec.interimResults = false;
+ rec.continuous = false;
+ $("speechStatus").textContent = "Слушаю...";
+ rec.onresult = e => {
+   const heard = normalize(e.results[0][0].transcript);
+   let matched = 0;
+   const used = new Set();
+   $("result").replaceChildren();
+   expected.forEach(word => {
+     const pos = heard.findIndex(
+       (w,i) => w === word && !used.has(i)
+     );
+     const span = document.createElement("span");
+     span.className = "word " + (pos >= 0 ? "good" : "bad");
+     span.textContent = word;
+     $("result").appendChild(span);
+     if(pos >= 0) {
+       used.add(pos);
+       matched++;
+     }
+   });
+   $("score").textContent =
+    `Распознано слов: ${matched} из ${expected.length}`;
+   $("speechStatus").textContent =
+    "Проверка завершена";
+ };
+ rec.onerror = e => {
+   $("speechStatus").textContent =
+     "Ошибка распознавания: " + e.error;
+ };
+ try { rec.start(); }
+ catch(e) { $("speechStatus").textContent = e.message; }
+}
+
+let recorder, chunks = [], recordStream;
+
+async function startRecording() {
+ try {
+   if (!window.MediaRecorder) throw Error(
+     "Запись не поддерживается браузером"
+   );
+   recordStream = await navigator.mediaDevices
+     .getUserMedia({audio:true});
+   chunks = [];
+   recorder = new MediaRecorder(recordStream);
+   recorder.ondataavailable = e => {
+     if(e.data.size) chunks.push(e.data);
+   };
+   recorder.onstop = () => {
+     const blob = new Blob(chunks, {
+       type: recorder.mimeType
+     });
+     $("playback").src = URL.createObjectURL(blob);
+     recordStream.getTracks().forEach(t => t.stop());
+     $("recordStatus").textContent =
+       "Готово! Прослушай свою запись.";
+   };
+   recorder.start();
+   $("recordStatus").textContent = "Идет запись...";
+ } catch(e) {
+   $("recordStatus").textContent = e.message;
+ }
+}
+
+function stopRecording() {
+ if(recorder && recorder.state === "recording") {
+   recorder.stop();
+ }
+}
+
+let audioContext, analyser, pitchStream, pitchFrame;
+
+async function startPitch() {
+ try {
+   stopPitch();
+   pitchStream = await navigator.mediaDevices
+     .getUserMedia({audio:true});
+   audioContext = new (window.AudioContext ||
+     window.webkitAudioContext)();
+   const source = audioContext.createMediaStreamSource(
+     pitchStream
+   );
+   analyser = audioContext.createAnalyser();
+   analyser.fftSize = 4096;
+   source.connect(analyser);
+   pitchLoop();
+ } catch(e) {
+   $("note").textContent = e.message;
+ }
+}
+
+function detectPitch(buffer, sampleRate) {
+ let rms = Math.sqrt(buffer.reduce(
+   (sum,x) => sum + x*x, 0
+ ) / buffer.length);
+ if(rms < .015) return null;
+ const minLag = Math.floor(sampleRate/800);
+ const maxLag = Math.floor(sampleRate/80);
+ let bestLag = 0, best = -1;
+ for(let lag=minLag;lag<maxLag;lag++) {
+   let sum=0, a=0, b=0;
+   for(let i=0;i<buffer.length-lag;i+=2) {
+     let x=buffer[i], y=buffer[i+lag];
+     sum+=x*y; a+=x*x; b+=y*y;
+   }
+   const corr=sum/Math.sqrt(a*b || 1);
+   if(corr>best) {best=corr; bestLag=lag;}
+ }
+ return best>.7 ? sampleRate/bestLag : null;
+}
+
+function pitchLoop() {
+ if(!analyser) return;
+ const data = new Float32Array(analyser.fftSize);
+ analyser.getFloatTimeDomainData(data);
+ const hz = detectPitch(data,audioContext.sampleRate);
+ if(hz) {
+   const midi = Math.round(69+12*Math.log2(hz/440));
+   const names=["До","До♯","Ре","Ре♯",
+     "Ми","Фа","Фа♯","Соль",
+     "Соль♯","Ля","Ля♯","Си"];
+   $("note").textContent =
+     `${names[(midi+120)%12]} · ${Math.round(hz)} Гц`;
+ } else {
+   $("note").textContent = "Слушаю ноту...";
+ }
+ pitchFrame=requestAnimationFrame(pitchLoop);
+}
+
+function stopPitch() {
+ cancelAnimationFrame(pitchFrame);
+ analyser=null;
+ if(pitchStream) {
+   pitchStream.getTracks().forEach(t=>t.stop());
+   pitchStream=null;
+ }
+ if(audioContext) {
+   audioContext.close();
+   audioContext=null;
+ }
+}
+
+choose("bradley");
+</script>
+</body>
+</html>
