@@ -1,728 +1,1083 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#101225">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Shallow Studio">
-<title>SHALLOW Studio 3.1</title>
+<meta charset="utf-8">
+<meta name="viewport"
+content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101425">
+<title>SHALLOW Studio 4.0</title>
 <style>
-:root {
-  --bg:#0c1020;
-  --panel:#1b2238;
-  --line:#343c59;
-  --purple:#b5a4ff;
-  --text:#f7f7ff;
-  --muted:#aeb9d2;
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:#0e1222;
+ color:#f6f5ff;
+ font:16px -apple-system,Arial,sans-serif
 }
-* { box-sizing:border-box; }
-body {
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;
+main{
+ max-width:740px;
+ margin:auto;
+ padding:16px 14px 70px
 }
-main {
-  max-width:720px;
-  margin:auto;
-  padding:16px 14px 65px;
+h1{margin:5px 0;font-size:30px}
+h2{margin:0 0 12px;font-size:19px}
+.sub{
+ font-size:13px;
+ color:#b5bbd3;
+ line-height:1.5
 }
-header { text-align:center;padding:18px 0; }
-h1 { font-size:34px;margin:8px 0; }
-h2 { font-size:19px;margin:0 0 13px; }
-p { line-height:1.5; }
-.muted { color:var(--muted);font-size:13px; }
-.card {
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:17px;
-  margin-bottom:13px;
+.card{
+ background:#1b2138;
+ border:1px solid #38405e;
+ border-radius:20px;
+ padding:17px;
+ margin:13px 0
 }
-button {
-  border:0;
-  border-radius:13px;
-  background:#7865ee;
-  color:white;
-  padding:13px 12px;
-  min-height:46px;
-  font-size:15px;
-  font-weight:650;
-  cursor:pointer;
+.row{
+ display:flex;
+ gap:8px;
+ align-items:center
 }
-button:disabled { opacity:.45; }
-.secondary { background:#394563; }
-.danger { background:#bd4d65; }
-.buttons { display:flex;gap:8px;flex-wrap:wrap; }
-.buttons button { flex:1; }
-.active { outline:2px solid #d3c6ff; }
-.big {
-  width:100%;
-  min-height:58px;
-  font-size:18px;
-  margin-top:12px;
+.row>*{min-width:0}
+button,.picker{
+ border:0;
+ border-radius:13px;
+ min-height:46px;
+ padding:11px;
+ background:#a99aff;
+ color:#15142a;
+ font-weight:700;
+ font-size:14px;
+ cursor:pointer
 }
-#english {
-  font-size:27px;
-  font-weight:750;
-  line-height:1.35;
-  margin:18px 0;
+button.secondary{
+ background:#384360;
+ color:#fff
 }
-#phonetic {
-  color:var(--purple);
-  font-size:21px;
-  line-height:1.45;
+button.danger{
+ background:#b95770;
+ color:white
 }
-#translation {
-  color:#cbd3e5;
-  font-size:15px;
-  margin:16px 0;
+button:disabled{opacity:.4}
+.grow{flex:1}
+.full{width:100%}
+.tabs{
+ display:flex;
+ gap:7px;
+ overflow:auto;
+ padding:4px 0 12px
 }
-.status {
-  background:#29324b;
-  border-radius:11px;
-  padding:12px;
-  margin:12px 0;
-  color:#e1e6f5;
-  font-size:13px;
-  line-height:1.5;
+.tabs button{
+ white-space:nowrap;
+ background:#323b58;
+ color:white
 }
-.status.error { color:#ffb5c0; }
-input[type=file] { display:none; }
-.fileButton {
-  display:block;
-  text-align:center;
-  background:#6e5ce0;
-  border-radius:13px;
-  padding:16px;
-  margin:13px 0;
-  font-weight:700;
-  cursor:pointer;
+.tabs button.active{
+ background:#ab9cff;
+ color:#14112c
 }
-input[type=range] {
-  width:100%;
-  accent-color:#aa95ff;
+.picker{
+ display:block;
+ text-align:center;
+ margin:12px 0;
+ background:#6659b3;
+ color:white
 }
-audio { width:100%;margin:12px 0; }
-#recordBox { display:none; }
-#recordBox.show { display:block; }
-#recordTime {
-  text-align:center;
-  font-size:24px;
-  font-weight:700;
-  margin:13px 0;
+.picker input{display:none}
+.small{
+ font-size:12px;
+ color:#b7bed3
 }
-.meter {
-  height:9px;
-  background:#343e59;
-  border-radius:20px;
-  overflow:hidden;
-  margin:15px 0;
+.big{
+ font-size:27px;
+ line-height:1.4;
+ font-weight:800;
+ margin:17px 0;
+ overflow-wrap:anywhere
 }
-#meterFill {
-  width:0;
-  height:100%;
-  background:#bba8ff;
+.big span{color:#7e86a5}
+.big span.done{color:#d2c4ff}
+.big span.now{
+ background:#6e5db0;
+ color:white;
+ border-radius:3px
 }
-.small { font-size:12px;color:var(--muted); }
-.tabs { display:flex;gap:7px;overflow-x:auto;padding:3px 0 13px; }
-.tabs button { white-space:nowrap;font-size:13px; }
-#note { text-align:center;color:var(--purple);font-size:15px; }
-a { color:#d4c9ff; }
-@media(min-width:700px) {
-  .columns {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:13px;
-  }
+.phon{
+ font-size:21px;
+ color:#c2b5ff;
+ margin:13px 0
 }
+.translation{
+ color:#c3cce0;
+ font-size:14px
+}
+input[type=range]{
+ width:100%;
+ accent-color:#a99aff
+}
+.status{
+ color:#bfc9e0;
+ font-size:13px;
+ line-height:1.45;
+ margin:12px 0
+}
+.meters{
+ height:7px;
+ background:#333c58;
+ border-radius:20px;
+ overflow:hidden;
+ margin:12px 0
+}
+.meters div{
+ height:100%;
+ width:0;
+ background:#aa99ff
+}
+.recorded{display:none}
+.recorded.show{display:block}
+audio{width:100%}
+.grid{display:grid;gap:12px}
+@media(min-width:650px){
+ .grid{grid-template-columns:1fr 1fr}
+}
+.badge{
+ padding:5px 9px;
+ border:1px solid #666184;
+ border-radius:30px;
+ font-size:12px;
+ color:#d9d1ff
+}
+.note{
+ font-size:13px;
+ color:#c8c0ff
+}
+.space{justify-content:space-between}
 </style>
 </head>
 <body>
 <main>
-<header>
-<div style="color:#b5a4ff;letter-spacing:3px;font-size:12px">
-YOUR VOCAL STUDIO
-</div>
-<h1>SHALLOW</h1>
-<div class="muted">Lady Gaga & Bradley Cooper</div>
-<p>Учись петь. Слушай себя. Совершенствуйся.</p>
-<div class="small">Версия 3.1 · iPhone</div>
+
+<header class="row space">
+ <div>
+  <div class="small">ТВОЯ ВОКАЛЬНАЯ СТУДИЯ</div>
+  <h1>SHALLOW Studio</h1>
+ </div>
+ <span class="badge">4.0 · iPhone</span>
 </header>
 
 <section class="card">
-<h2>Музыка</h2>
-<label class="fileButton" for="musicFile">
-Выбрать песню из «Файлов»
-</label>
-<input id="musicFile" type="file">
-<div id="fileName" class="small">Файл не выбран</div>
+ <h2>Музыка</h2>
 
-<audio id="music" preload="metadata" playsinline></audio>
+ <div class="row">
+  <button class="grow" id="modeOriginal">
+   Оригинал
+  </button>
+  <button class="grow secondary" id="modeBacking">
+   Минусовка
+  </button>
+ </div>
 
-<div class="buttons" style="margin-top:14px">
-<button id="playBtn" onclick="toggleMusic()">▶ Играть</button>
-<button class="secondary" onclick="restartMusic()">↺ Сначала</button>
-<button class="danger" onclick="removeMusic()">Удалить</button>
-</div>
+ <label class="picker">
+  Выбрать MP3 / M4A из «Файлов»
+  <input type="file" id="file">
+ </label>
 
-<div class="small" style="margin-top:15px">Перемотка</div>
-<input type="range" id="seek" min="0" max="1000" value="0">
-<div class="small" id="musicTime">0:00 / 0:00</div>
+ <div id="filename" class="small">
+  Оригинал пока не загружен
+ </div>
 
-<div class="small" style="margin-top:15px">Громкость музыки</div>
-<input type="range" id="volume" min="0" max="1" step=".05" value=".7">
+ <div class="row" style="margin-top:13px">
+  <button id="play" disabled>▶ Играть</button>
+  <div class="grow">
+   <input id="seek" type="range"
+   min="0" max="1000" value="0">
+   <div class="row space small">
+    <span id="position">0:00</span>
+    <span id="duration">0:00</span>
+   </div>
+  </div>
+ </div>
 
-<div class="small" style="margin-top:15px">Скорость</div>
-<div class="buttons">
-<button class="secondary" onclick="speed(.75)">0,75×</button>
-<button class="secondary" onclick="speed(.9)">0,9×</button>
-<button onclick="speed(1)">1×</button>
-</div>
-<div id="musicStatus" class="status">Музыка не загружена.</div>
+ <div class="row" style="margin-top:10px">
+  <button class="secondary grow" id="slow">
+   0,75×
+  </button>
+  <button class="secondary grow" id="normal">
+   1×
+  </button>
+  <button class="danger" id="remove">
+   Удалить
+  </button>
+ </div>
+
+ <p class="small">Громкость музыки</p>
+ <input id="volume" type="range"
+ min="0" max="1" step="0.05" value="0.7">
+
+ <p class="status" id="musicStatus">
+  Добавь свою песню, затем включи музыку.
+ </p>
+
+ <audio id="audio" playsinline
+ preload="metadata"></audio>
 </section>
 
-<div class="columns">
-<section class="card">
-<h2>Текст песни</h2>
-<div class="tabs">
-<button id="tab-bradley" onclick="choose('bradley')">Брэдли</button>
-<button id="tab-gaga" onclick="choose('gaga')">Гага</button>
-<button id="tab-chorus" onclick="choose('chorus')">Припев</button>
-<button id="tab-vocal" onclick="choose('vocal')">Вокализ</button>
-<button id="tab-final" onclick="choose('final')">Финал</button>
-</div>
-<div id="counter" class="small"></div>
-<div id="english"></div>
-<div id="phonetic"></div>
-<div id="translation"></div>
-<div class="buttons">
-<button class="secondary" onclick="move(-1)">← Назад</button>
-<button onclick="move(1)">Дальше →</button>
-</div>
-<p class="small">
-Пока текст переключается вручную.
-</p>
-</section>
-
-<section class="card">
-<h2>Твое исполнение</h2>
-<p class="muted">
-Подключи микрофон, затем нажми «Петь под музыку».
-Для лучшего результата используй наушники.
-</p>
-
-<button class="big secondary" id="micBtn" onclick="prepareMic()">
-1. Подключить микрофон
-</button>
-<div id="micStatus" class="status">Микрофон выключен.</div>
-
-<button class="big" id="recordBtn" onclick="toggleRecord()" disabled>
-2. Петь под музыку
-</button>
-
-<div id="recordTime">00:00</div>
-<div class="meter"><div id="meterFill"></div></div>
-<div id="note">Голос не анализируется</div>
-
-<div id="recordBox">
-<h2 style="margin-top:20px">Твоя запись</h2>
-<audio id="playback" controls playsinline></audio>
-<div class="buttons">
-<a id="downloadRecording" download="shallow-voice.m4a">
-Сохранить запись
-</a>
-<button class="danger" onclick="clearRecording()">Удалить запись</button>
-</div>
-</div>
-
-<button class="big secondary" onclick="releaseMic()">
-Выключить микрофон
-</button>
-</section>
-</div>
+<div class="grid">
 
 <section class="card">
-<h2>Как заниматься</h2>
-<p class="muted">
-1. Загрузи свою песню Shallow.
-</p>
-<p class="muted">
-2. Выбери куплет и первую строку.
-</p>
-<p class="muted">
-3. Подключи микрофон один раз.
-</p>
-<p class="muted">
-4. Нажми «Петь под музыку».
-</p>
-<p class="muted">
-5. Останови запись и прослушай себя.
-</p>
-<p class="small">
-Приложение пока не оценивает правильность исполнения.
-Индикатор нот показывает только приблизительную
-высоту твоего голоса.
-</p>
+ <div class="row space">
+  <h2>Текст и вступление</h2>
+  <span class="badge" id="count">1/7</span>
+ </div>
+
+ <div class="tabs" id="tabs">
+  <button data-part="bradley">Брэдли</button>
+  <button data-part="gaga">Гага</button>
+  <button data-part="chorus">Припев</button>
+  <button data-part="vocal">Вокализ</button>
+  <button data-part="final">Финал</button>
+ </div>
+
+ <div class="small" id="countdown">
+  Вступление: —
+ </div>
+
+ <div id="english" class="big"></div>
+ <div class="phon" id="phon"></div>
+ <div class="translation" id="meaning"></div>
+
+ <div class="meters">
+  <div id="letterBar"></div>
+ </div>
+
+ <div class="row" style="margin-top:12px">
+  <button class="secondary grow" id="prev">
+   ← Назад
+  </button>
+  <button class="grow" id="next">
+   Дальше →
+  </button>
+ </div>
+
+ <div class="row" style="margin-top:11px">
+  <button id="mark" class="grow">
+   ● Начало строки сейчас
+  </button>
+  <button class="secondary" id="unmark">
+   Сбросить
+  </button>
+ </div>
+
+ <p class="status" id="syncInfo">
+  Для точной синхронизации отметь начало
+  каждой строки при воспроизведении.
+ </p>
 </section>
+
+<section class="card">
+ <h2>Пой под музыку</h2>
+ <p class="sub">
+  В наушниках ты слышишь музыку,
+  а микрофон записывает твой голос.
+ </p>
+
+ <button class="full secondary" id="connect">
+  1. Подключить микрофон
+ </button>
+
+ <button class="full" id="record"
+ style="margin-top:9px" disabled>
+  2. Петь под музыку
+ </button>
+
+ <div class="row space" style="margin-top:12px">
+  <strong id="clock">0:00</strong>
+  <span class="note" id="pitch">
+   Микрофон выключен
+  </span>
+ </div>
+
+ <div class="meters">
+  <div id="level"></div>
+ </div>
+
+ <p class="status" id="micStatus">
+  Микрофон не подключен.
+ </p>
+
+ <div id="recorded" class="recorded">
+  <h2>Твоя запись</h2>
+  <audio controls id="listen"></audio>
+  <a id="save" download="Shallow-my-voice.m4a"
+  style="color:#cabfff">
+   Сохранить запись
+  </a>
+ </div>
+
+ <button class="secondary full"
+ id="disconnect" style="margin-top:15px">
+  Выключить микрофон
+ </button>
+
+ <p class="sub">
+  Оценка произношения и точных нот
+  пока не включена. Для нее нужен
+  отдельный анализатор.
+ </p>
+</section>
+</div>
+
 </main>
 
 <script>
-"use strict";
+'use strict';
 
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
 
-const lyrics = [
-["bradley","Tell me something, girl","Тэл ми са́мсин, гёрл","Скажи мне кое-что, девушка"],
-["bradley","Are you happy in this modern world?","Ар ю хэ́пи ин зис мо́дэрн уёрлд?","Ты счастлива в этом современном мире?"],
-["bradley","Or do you need more?","Ор ду ю нид моор?","Или тебе нужно что-то большее?"],
-["bradley","Is there something else you're searchin' for?","Из зэр са́мсин элс йор сё́рчин фор?","Есть ли что-то еще, что ты ищешь?"],
-["bradley","I'm falling","Айм фо́лин","Я падаю"],
-["bradley","In all the good times, I find myself longin' for change","Ин ол зэ гуд таймз, ай файнд майсе́лф ло́нгин фор чейндж","В хорошие времена я жажду перемен"],
-["bradley","And in the bad times, I fear myself","Энд ин зэ бэд таймз, ай фир майсе́лф","В плохие времена я боюсь самого себя"],
+const rows=[
+['bradley',
+'Tell me something, girl',
+'Тэл ми са́мсин, гёрл',
+'Скажи мне кое-что, девушка'],
 
-["gaga","Tell me something, boy","Тэл ми са́мсин, бой","Скажи мне кое-что, парень"],
-["gaga","Aren't you tired trying to fill that void?","А́рнт ю та́йэрд тра́йин ту фил зэт войд?","Ты не устал пытаться заполнить пустоту?"],
-["gaga","Or do you need more?","Ор ду ю нид моор?","Или тебе нужно больше?"],
-["gaga","Ain't it hard keeping it so hardcore?","Эйнт ит хард ки́пин ит со́у ха́рдкор?","Разве не трудно быть таким жестким?"],
-["gaga","I'm falling","Айм фо́лин","Я падаю"],
-["gaga","In all the good times, I find myself longing for change","Ин ол зэ гуд таймз, ай файнд майсе́лф ло́нгин фор чейндж","В хорошие времена я жажду перемен"],
-["gaga","And in the bad times, I fear myself","Энд ин зэ бэд таймз, ай фир майсе́лф","В плохие времена я боюсь самой себя"],
+['bradley',
+'Are you happy in this modern world?',
+'Ар ю хэ́пи ин зис мо́дэрн уёрлд?',
+'Ты счастлива в этом современном мире?'],
 
-["chorus","I'm off the deep end, watch as I dive in","Айм оф зэ дип энд, уотч эз ай дайв ин","Я бросаюсь в глубину"],
-["chorus","I'll never meet the ground","Айл не́вэр мит зэ граунд","Я никогда не коснусь дна"],
-["chorus","Crash through the surface, where they can't hurt us","Крэш сру зэ сё́рфис, уэр зэй кэнт хёрт ас","Прорываемся туда, где нас не смогут ранить"],
-["chorus","We're far from the shallow now","Уир фар фром зэ шэ́лоу нау","Теперь мы далеко от мелководья"],
-["chorus","In the sha-, shallow","Ин зэ ша, шэ́лоу","На мелководье"],
-["chorus","In the sha-ha-sha-la-la-la-llow","Ин зэ ша-ха-ша-ла-ла-ла-лоу","Вокальный повтор"],
-["chorus","In the sha-ha, sha-ha-llow","Ин зэ ша-ха, ша-ха-лоу","Вокальный повтор"],
-["chorus","We're far from the shallow now","Уир фар фром зэ шэ́лоу нау","Теперь мы далеко от мелководья"],
+['bradley',
+'Or do you need more?',
+'Ор ду ю нид моор?',
+'Или тебе нужно чего-то большего?'],
 
-["vocal","Oh, ha-ah-ah","Оу, ха-а-а","Вокализ"],
-["vocal","Ah, ha-ah-ah, oh, ah","А, ха-а-а, оу, а","Вокализ"],
-["vocal","Ha-ah-ah-ah","Ха-а-а-а","Вокализ"],
+['bradley',
+"Is there something else you're searchin' for?",
+'Из зэр са́мсин элс йор сё́рчин фор?',
+'Может, ты ищешь что-то еще?'],
 
-["final","I'm off the deep end, watch as I dive in","Айм оф зэ дип энд, уотч эз ай дайв ин","Я бросаюсь в глубину"],
-["final","I'll never meet the ground","Айл не́вэр мит зэ граунд","Я никогда не коснусь дна"],
-["final","Crash through the surface, where they can't hurt us","Крэш сру зэ сё́рфис, уэр зэй кэнт хёрт ас","Туда, где нас не смогут ранить"],
-["final","We're far from the shallow now","Уир фар фром зэ шэ́лоу нау","Мы далеко от мелководья"],
-["final","In the sha-ha, sha-ha-llow","Ин зэ ша-ха, ша-ха-лоу","Вокальный повтор"],
-["final","In the sha-ha-sha-la-la-la-llow","Ин зэ ша-ха-ша-ла-ла-ла-лоу","Вокальный повтор"],
-["final","In the sha-ha, sha-ha-llow","Ин зэ ша-ха, ша-ха-лоу","Вокальный повтор"],
-["final","We're far from the shallow now","Уир фар фром зэ шэ́лоу нау","Мы далеко от мелководья"]
+['bradley',
+"I'm falling",
+'Айм фо́лин',
+'Я падаю'],
+
+['bradley',
+"In all the good times, I find myself longin' for change",
+'Ин ол зэ гуд таймз ай файнд майсе́лф ло́нгин фор чейндж',
+'В хорошие времена мне хочется перемен'],
+
+['bradley',
+'And in the bad times, I fear myself',
+'Энд ин зэ бэд таймз ай фир майсе́лф',
+'А в плохие времена я боюсь самого себя'],
+
+['gaga',
+'Tell me something, boy',
+'Тэл ми са́мсин бой',
+'Скажи мне кое-что, парень'],
+
+['gaga',
+"Aren't you tired trying to fill that void?",
+'А́рнт ю та́йэрд тра́йин ту фил зэт войд?',
+'Ты не устал пытаться заполнить пустоту?'],
+
+['gaga',
+'Or do you need more?',
+'Ор ду ю нид моор?',
+'Или тебе нужно больше?'],
+
+['gaga',
+"Ain't it hard keeping it so hardcore?",
+'Эйнт ит хард ки́пин ит соу ха́рдкор?',
+'Разве не трудно быть настолько суровым?'],
+
+['gaga',
+"I'm falling",
+'Айм фо́лин',
+'Я падаю'],
+
+['gaga',
+'In all the good times, I find myself longing for change',
+'Ин ол зэ гуд таймз ай файнд майсе́лф ло́нгин фор чейндж',
+'В хорошие времена мне хочется перемен'],
+
+['gaga',
+'And in the bad times, I fear myself',
+'Энд ин зэ бэд таймз ай фир майсе́лф',
+'А в плохие времена я боюсь самой себя'],
+
+['chorus',
+"I'm off the deep end, watch as I dive in",
+'Айм оф зэ дип энд уотч эз ай дайв ин',
+'Я ныряю в самую глубину'],
+
+['chorus',
+"I'll never meet the ground",
+'Айл не́вэр мит зэ граунд',
+'Я никогда не достигну дна'],
+
+['chorus',
+"Crash through the surface, where they can't hurt us",
+'Крэш сру зэ сё́рфис уэр зэй кэнт хёрт ас',
+'Прорываюсь туда, где нас не ранят'],
+
+['chorus',
+"We're far from the shallow now",
+'Уир фар фром зэ шэ́лоу нау',
+'Теперь мы далеко от мелководья'],
+
+['chorus',
+'In the sha-, shallow',
+'Ин зэ ша, шэ́лоу',
+'Вокальный повтор'],
+
+['chorus',
+'In the sha-ha-sha-la-la-la-llow',
+'Ин зэ ша-ха-ша-ла-ла-ла-лоу',
+'Вокальный повтор'],
+
+['chorus',
+'In the sha-ha, sha-ha-llow',
+'Ин зэ ша-ха ша-ха-лоу',
+'Вокальный повтор'],
+
+['chorus',
+"We're far from the shallow now",
+'Уир фар фром зэ шэ́лоу нау',
+'Мы далеко от мелководья'],
+
+['vocal',
+'Oh, ha-ah-ah',
+'Оу ха-а-а',
+'Вокализ'],
+
+['vocal',
+'Ah, ha-ah-ah, oh, ah',
+'А ха-а-а оу а',
+'Вокализ'],
+
+['vocal',
+'Ha-ah-ah-ah',
+'Ха-а-а-а',
+'Вокализ'],
+
+['final',
+"I'm off the deep end, watch as I dive in",
+'Айм оф зэ дип энд уотч эз ай дайв ин',
+'Я ныряю в глубину'],
+
+['final',
+"I'll never meet the ground",
+'Айл не́вэр мит зэ граунд',
+'Я никогда не достигну дна'],
+
+['final',
+"Crash through the surface, where they can't hurt us",
+'Крэш сру зэ сё́рфис уэр зэй кэнт хёрт ас',
+'Прорываюсь туда, где нас не ранят'],
+
+['final',
+"We're far from the shallow now",
+'Уир фар фром зэ шэ́лоу нау',
+'Мы далеко от мелководья'],
+
+['final',
+'In the sha-ha, sha-ha-llow',
+'Ин зэ ша-ха ша-ха-лоу',
+'Вокальный повтор'],
+
+['final',
+'In the sha-ha-sha-la-la-la-llow',
+'Ин зэ ша-ха-ша-ла-ла-ла-лоу',
+'Вокальный повтор'],
+
+['final',
+'In the sha-ha, sha-ha-llow',
+'Ин зэ ша-ха ша-ха-лоу',
+'Вокальный повтор'],
+
+['final',
+"We're far from the shallow now",
+'Уир фар фром зэ шэ́лоу нау',
+'Мы далеко от мелководья']
 ];
 
-let part = "bradley";
-let line = 0;
-let visible = [];
+let part='bradley';
+let index=0;
+let mode='original';
 
-function choose(name) {
- part = name;
- line = 0;
- visible = lyrics.filter(x => x[0] === name);
+const tracks={
+ original:null,
+ backing:null
+};
 
- document.querySelectorAll(".tabs button").forEach(b => {
-  b.classList.remove("active");
+const audio=$('audio');
+
+const marks={
+ original:readMarks('original'),
+ backing:readMarks('backing')
+};
+
+function readMarks(m){
+ try{
+  return JSON.parse(
+   localStorage.getItem('shallow4-marks-'+m)||'{}'
+  );
+ }catch{
+  return {};
+ }
+}
+
+function persist(){
+ try{
+  localStorage.setItem(
+   'shallow4-marks-'+mode,
+   JSON.stringify(marks[mode])
+  );
+ }catch{}
+}
+
+function fmt(x){
+ if(!Number.isFinite(x))return '0:00';
+ x=Math.floor(x);
+ return Math.floor(x/60)+':'
+  +String(x%60).padStart(2,'0');
+}
+
+function setMode(m){
+ audio.pause();
+ mode=m;
+ audio.removeAttribute('src');
+ audio.load();
+
+ if(tracks[m]){
+  audio.src=tracks[m].url;
+  audio.load();
+ }
+
+ $('filename').textContent=
+  tracks[m]?.name||
+  'Загрузи '+(m==='original'?'оригинал':'минусовку');
+
+ $('play').disabled=!tracks[m];
+
+ $('modeOriginal').className=
+  m==='original'?'grow':'grow secondary';
+
+ $('modeBacking').className=
+  m==='backing'?'grow':'grow secondary';
+
+ $('play').textContent='▶ Играть';
+ $('position').textContent='0:00';
+ $('duration').textContent='0:00';
+ $('seek').value=0;
+ render();
+}
+
+$('modeOriginal').onclick=()=>setMode('original');
+$('modeBacking').onclick=()=>setMode('backing');
+
+$('file').onchange=e=>{
+ const file=e.target.files[0];
+ if(!file)return;
+
+ const old=tracks[mode];
+
+ if(old)URL.revokeObjectURL(old.url);
+
+ tracks[mode]={
+  name:file.name,
+  url:URL.createObjectURL(file)
+ };
+
+ setMode(mode);
+ $('file').value='';
+
+ $('musicStatus').textContent=
+  'Файл выбран. Нажми «Играть».';
+};
+
+$('remove').onclick=()=>{
+ if(tracks[mode]){
+  URL.revokeObjectURL(tracks[mode].url);
+ }
+ tracks[mode]=null;
+ setMode(mode);
+};
+
+$('play').onclick=async()=>{
+ if(!tracks[mode])return;
+
+ if(!audio.paused){
+  audio.pause();
+  return;
+ }
+
+ try{
+  await audio.play();
+ }catch(e){
+  $('musicStatus').textContent=
+   'Ошибка: '+e.message;
+ }
+};
+
+audio.onplay=()=>{
+ $('play').textContent='⏸ Пауза';
+};
+
+audio.onpause=()=>{
+ $('play').textContent='▶ Играть';
+};
+
+audio.onloadedmetadata=()=>{
+ $('duration').textContent=fmt(audio.duration);
+};
+
+audio.onerror=()=>{
+ $('musicStatus').textContent=
+  'Файл не воспроизводится в Safari.';
+};
+
+audio.ontimeupdate=()=>{
+ const d=audio.duration;
+
+ $('position').textContent=fmt(audio.currentTime);
+
+ if(d>0&&Number.isFinite(d)){
+  $('seek').value=1000*audio.currentTime/d;
+ }
+
+ highlight();
+};
+
+$('seek').oninput=e=>{
+ if(Number.isFinite(audio.duration)&&audio.duration>0){
+  audio.currentTime=
+   audio.duration*e.target.value/1000;
+  highlight();
+ }
+};
+
+$('slow').onclick=()=>{
+ audio.playbackRate=.75;
+};
+
+$('normal').onclick=()=>{
+ audio.playbackRate=1;
+};
+
+$('volume').oninput=e=>{
+ audio.volume=+e.target.value;
+};
+
+audio.volume=.7;
+
+function partIndices(){
+ return rows.map((r,i)=>
+  r[0]===part?i:-1
+ ).filter(i=>i>=0);
+}
+
+function render(){
+ const ids=partIndices();
+ const r=rows[index];
+ const pos=ids.indexOf(index);
+
+ $('count').textContent=
+  (pos+1)+'/'+ids.length;
+
+ $('phon').textContent=r[2];
+ $('meaning').textContent=r[3];
+
+ $('english').replaceChildren();
+
+ [...r[1]].forEach(ch=>{
+  const s=document.createElement('span');
+  s.textContent=ch;
+  s.className='letter';
+  $('english').append(s);
  });
- $("tab-" + name).classList.add("active");
+
+ document.querySelectorAll('[data-part]')
+  .forEach(b=>b.classList.toggle(
+   'active',
+   b.dataset.part===part
+  ));
+
+ highlight();
+}
+
+function choose(p){
+ part=p;
+ index=partIndices()[0];
  render();
 }
 
-function move(n) {
- line = Math.max(0,Math.min(visible.length-1,line+n));
+document.querySelectorAll('[data-part]')
+ .forEach(b=>b.onclick=()=>choose(b.dataset.part));
+
+function step(n){
+ const ids=partIndices();
+ const j=ids.indexOf(index);
+
+ index=ids[Math.max(
+  0,
+  Math.min(ids.length-1,j+n)
+ )];
+
  render();
 }
 
-function render() {
- const x = visible[line];
- $("counter").textContent = `Строка ${line+1} из ${visible.length}`;
- $("english").textContent = x[1];
- $("phonetic").textContent = x[2];
- $("translation").textContent = x[3];
+$('prev').onclick=()=>step(-1);
+$('next').onclick=()=>step(1);
+
+function startOf(i){
+ return Number.isFinite(marks[mode][i])
+  ?marks[mode][i]
+  :null;
 }
 
-const music = $("music");
-let musicURL = null;
+function highlight(){
+ const t=audio.currentTime;
 
-function musicStatus(message,isError=false) {
- $("musicStatus").textContent = message;
- $("musicStatus").className = "status" + (isError ? " error" : "");
-}
+ const known=Object.entries(marks[mode])
+  .map(([k,v])=>[+k,+v])
+  .filter(([k,v])=>Number.isFinite(v))
+  .sort((a,b)=>a[1]-b[1]);
 
-$("musicFile").addEventListener("change",e => {
- const file = e.target.files[0];
- if (!file) return;
+ if(!known.length){
+  $('countdown').textContent=
+   'Вступление: настрой метки';
 
- music.pause();
- music.removeAttribute("src");
- music.load();
+  $('syncInfo').textContent=
+   'Включи музыку и в момент начала строки нажми «Начало строки сейчас».';
 
- if (musicURL) URL.revokeObjectURL(musicURL);
-
- musicURL = URL.createObjectURL(file);
- music.src = musicURL;
- music.load();
-
- $("fileName").textContent = file.name;
- musicStatus("Файл выбран. Нажми «Играть».");
-});
-
-music.addEventListener("playing",() => {
- $("playBtn").textContent = "⏸ Пауза";
- musicStatus("Музыка играет.");
-});
-
-music.addEventListener("pause",() => {
- $("playBtn").textContent = "▶ Играть";
-});
-
-music.addEventListener("error",() => {
- if(musicURL) musicStatus(
-  "Safari не смог воспроизвести файл. Попробуй другой MP3 или M4A.",
-  true
- );
-});
-
-async function toggleMusic() {
- if(!musicURL) {
-  musicStatus("Сначала выбери аудиофайл.",true);
+  $('letterBar').style.width='0%';
   return;
  }
- if(!music.paused) {
-  music.pause();
-  return;
- }
- try {
-  await music.play();
- } catch(e) {
-  musicStatus("Ошибка воспроизведения: " + e.message,true);
- }
-}
 
-function restartMusic() {
- if(!musicURL) return;
- music.currentTime = 0;
-}
-
-function removeMusic() {
- music.pause();
- music.removeAttribute("src");
- music.load();
-
- if(musicURL) URL.revokeObjectURL(musicURL);
- musicURL = null;
-
- $("musicFile").value = "";
- $("fileName").textContent = "Файл не выбран";
- $("musicTime").textContent = "0:00 / 0:00";
- $("seek").value = 0;
- musicStatus("Музыка удалена.");
-}
-
-function speed(value) {
- music.playbackRate = value;
- musicStatus("Скорость: " + value + "×");
-}
-
-$("volume").addEventListener("input",e => {
- music.volume = Number(e.target.value);
-});
-music.volume = .7;
-
-function formatTime(seconds) {
- if(!Number.isFinite(seconds)) return "0:00";
- const s = Math.floor(seconds);
- return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
-}
-
-music.addEventListener("timeupdate",() => {
- const d = music.duration;
- $("musicTime").textContent =
-  formatTime(music.currentTime) + " / " + formatTime(d);
-
- if(Number.isFinite(d) && d > 0) {
-  $("seek").value = Math.round(music.currentTime / d * 1000);
- }
-});
-
-$("seek").addEventListener("input",e => {
- if(Number.isFinite(music.duration) && music.duration > 0) {
-  music.currentTime = Number(e.target.value) / 1000 * music.duration;
- }
-});
-
-let stream = null;
-let recorder = null;
-let chunks = [];
-let audioCtx = null;
-let analyser = null;
-let frame = null;
-let timer = null;
-let started = 0;
-let recordURL = null;
-let connecting = false;
-
-function microphoneStatus(text,error=false) {
- $("micStatus").textContent = text;
- $("micStatus").className = "status" + (error ? " error" : "");
-}
-
-async function prepareMic() {
- if(stream || connecting) return;
-
- connecting = true;
- $("micBtn").disabled = true;
- microphoneStatus("Подключаю микрофон...");
-
- try {
-  if(!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
-   throw new Error("Запись не поддерживается в этом браузере.");
+ if(!audio.paused){
+  for(let j=known.length-1;j>=0;j--){
+   if(t>=known[j][1]){
+    index=known[j][0];
+    part=rows[index][0];
+    break;
+   }
   }
 
-  stream = await navigator.mediaDevices.getUserMedia({
-   audio:{
-    echoCancellation:true,
-    noiseSuppression:true,
-    autoGainControl:true
-   }
-  });
+  if($('english').textContent!==rows[index][1]){
+   render();
+  }
+ }
 
-  if(!connecting) {
-   stream.getTracks().forEach(t=>t.stop());
-   stream=null;
+ const current=startOf(index);
+
+ if(current===null){
+  $('countdown').textContent=
+   'Для строки нет метки';
+
+  $('syncInfo').textContent=
+   'Отметь начало этой строки. Подсветка работает между соседними метками.';
+
+  $('letterBar').style.width='0%';
+  return;
+ }
+
+ const following=known.find(
+  ([k,v])=>v>current+0.01
+ );
+
+ const end=following
+  ?following[1]
+  :current+4;
+
+ const progress=Math.max(0,Math.min(
+  1,
+  (t-current)/Math.max(0.5,end-current)
+ ));
+
+ const chars=[...$('english').querySelectorAll('span')];
+
+ const n=Math.floor(progress*chars.length);
+
+ chars.forEach((s,i)=>{
+  s.className=i<n
+   ?'done'
+   :i===n&&progress>0?'now':'';
+ });
+
+ $('letterBar').style.width=(progress*100)+'%';
+
+ $('countdown').textContent=t<current
+  ?'Вступление через '+(current-t).toFixed(1)+' с'
+  :'Пой сейчас';
+
+ $('syncInfo').textContent=
+  'Метка строки: '+fmt(current)+
+  '. Буквы подсвечиваются приблизительно между метками.';
+}
+
+$('mark').onclick=()=>{
+ if(!tracks[mode]){
+  $('syncInfo').textContent=
+   'Сначала выбери музыку.';
+  return;
+ }
+
+ marks[mode][index]=+audio.currentTime.toFixed(2);
+ persist();
+ highlight();
+};
+
+$('unmark').onclick=()=>{
+ delete marks[mode][index];
+ persist();
+ highlight();
+};
+
+let stream=null;
+let rec=null;
+let parts=[];
+let recordURL=null;
+let ctx=null;
+let analyser=null;
+let frame=0;
+let clock=0;
+let recordStart=0;
+let busy=false;
+let generation=0;
+
+function micStatus(s){
+ $('micStatus').textContent=s;
+}
+
+function meter(){
+ if(!analyser)return;
+
+ const data=new Float32Array(analyser.fftSize);
+ analyser.getFloatTimeDomainData(data);
+
+ let sum=0;
+
+ for(let i=0;i<data.length;i++){
+  sum+=data[i]*data[i];
+ }
+
+ const rms=Math.sqrt(sum/data.length);
+
+ $('level').style.width=
+  Math.min(100,rms*520)+'%';
+
+ $('pitch').textContent=rms>.015
+  ?'Голос слышно'
+  :'Слушаю голос';
+
+ frame=requestAnimationFrame(meter);
+}
+
+$('connect').onclick=async()=>{
+ if(stream||busy)return;
+
+ busy=true;
+ const id=++generation;
+
+ $('connect').disabled=true;
+ micStatus('Подключаю микрофон...');
+
+ let newStream=null;
+
+ try{
+  if(!navigator.mediaDevices?.getUserMedia||
+     !window.MediaRecorder){
+   throw Error('Safari не поддерживает запись.');
+  }
+
+  newStream=await navigator.mediaDevices
+   .getUserMedia({
+    audio:{
+     echoCancellation:true,
+     noiseSuppression:true
+    }
+   });
+
+  if(id!==generation){
+   newStream.getTracks().forEach(t=>t.stop());
    return;
   }
 
-  const Context = window.AudioContext || window.webkitAudioContext;
+  stream=newStream;
 
-  if(Context) {
-   try {
-    audioCtx = new Context();
-    await audioCtx.resume();
-    if(!connecting) return;
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 2048;
-    const source = audioCtx.createMediaStreamSource(stream);
-    source.connect(analyser);
-    showLevel();
-   } catch(e) {
-    console.warn("Анализ голоса недоступен",e);
+  const AC=window.AudioContext||
+   window.webkitAudioContext;
+
+  try{
+   if(AC){
+    ctx=new AC();
+    await ctx.resume();
+
+    if(id!==generation)return;
+
+    analyser=ctx.createAnalyser();
+    analyser.fftSize=2048;
+
+    ctx.createMediaStreamSource(stream)
+     .connect(analyser);
+
+    meter();
    }
+  }catch(e){
+   console.warn(e);
   }
 
-  microphoneStatus("Микрофон готов. Можешь начинать.");
-  $("recordBtn").disabled = false;
-  $("micBtn").textContent = "✓ Микрофон подключен";
+  $('record').disabled=false;
 
- } catch(e) {
-  microphoneStatus(e.message,true);
-  if(stream) {
-   stream.getTracks().forEach(t=>t.stop());
-   stream=null;
+  micStatus(
+   'Микрофон готов. Нажми «Петь под музыку».'
+  );
+
+ }catch(e){
+  micStatus('Ошибка: '+e.message);
+
+  if(newStream&&!stream){
+   newStream.getTracks().forEach(t=>t.stop());
   }
- } finally {
-  connecting = false;
-  $("micBtn").disabled = false;
+ }finally{
+  busy=false;
+  $('connect').disabled=false;
  }
-}
+};
 
-function showLevel() {
- if(!analyser || !audioCtx) return;
-
- const data = new Float32Array(analyser.fftSize);
- analyser.getFloatTimeDomainData(data);
-
- let sum = 0;
- for(let i=0;i<data.length;i++) sum += data[i]*data[i];
-
- const rms = Math.sqrt(sum/data.length);
- $("meterFill").style.width = Math.min(100,rms*500) + "%";
-
- const frequency = detectPitch(data,audioCtx.sampleRate);
-
- if(frequency) {
-  const midi = Math.round(69+12*Math.log2(frequency/440));
-  const names = ["До","До♯","Ре","Ре♯","Ми","Фа",
-                 "Фа♯","Соль","Соль♯","Ля","Ля♯","Си"];
-  $("note").textContent =
-   names[(midi%12+12)%12] + " · " + Math.round(frequency) + " Гц";
- } else {
-  $("note").textContent = "Слушаю голос...";
- }
-
- frame = requestAnimationFrame(showLevel);
-}
-
-function detectPitch(data,sampleRate) {
- const N = data.length;
- let power = 0;
- for(let i=0;i<N;i++) power += data[i]*data[i];
-
- if(Math.sqrt(power/N)<.018) return null;
-
- let best = 0;
- let bestLag = 0;
-
- for(let lag=Math.floor(sampleRate/700);
-     lag<Math.min(N/2,Math.floor(sampleRate/85));
-     lag+=2) {
-  let a=0,b=0,c=0;
-
-  for(let i=0;i<N-lag;i+=3) {
-   const x=data[i],y=data[i+lag];
-   a+=x*y;
-   b+=x*x;
-   c+=y*y;
-  }
-
-  const corr = a/Math.sqrt(b*c||1);
-  if(corr>best) {
-   best=corr;
-   bestLag=lag;
-  }
- }
-
- return best>.82 ? sampleRate/bestLag : null;
-}
-
-async function toggleRecord() {
- if(recorder && recorder.state==="recording") {
-  stopRecording();
- } else {
-  await startRecording();
- }
-}
-
-async function startRecording() {
- if(!stream) {
-  microphoneStatus("Сначала подключи микрофон.",true);
+$('disconnect').onclick=()=>{
+ if(rec?.state==='recording'){
+  micStatus('Сначала останови запись.');
   return;
  }
 
- if(!musicURL) {
-  microphoneStatus("Сначала загрузи музыку.",true);
-  return;
- }
-
- try {
-  chunks=[];
-
-  const mime = MediaRecorder.isTypeSupported("audio/mp4")
-   ? "audio/mp4" : "";
-
-  recorder = mime
-   ? new MediaRecorder(stream,{mimeType:mime})
-   : new MediaRecorder(stream);
-
-  recorder.ondataavailable=e => {
-   if(e.data.size) chunks.push(e.data);
-  };
-
-  recorder.onstop=() => {
-   const type = recorder.mimeType || "audio/mp4";
-   const blob = new Blob(chunks,{type});
-
-   if(recordURL) URL.revokeObjectURL(recordURL);
-   recordURL = URL.createObjectURL(blob);
-
-   $("playback").src = recordURL;
-   $("downloadRecording").href = recordURL;
-   $("downloadRecording").download =
-    "shallow-voice." + (type.includes("mp4") ? "m4a" : "webm");
-
-   $("recordBox").classList.add("show");
-   microphoneStatus("Запись готова. Можешь прослушать себя.");
-   recorder=null;
-  };
-
-  music.pause();
-  music.currentTime = 0;
-
-  recorder.start(500);
-  started = Date.now();
-
-  $("recordBtn").textContent = "■ Остановить запись";
-  $("recordBtn").classList.add("danger");
-
-  timer=setInterval(() => {
-   $("recordTime").textContent =
-    formatTime((Date.now()-started)/1000);
-  },250);
-
-  try {
-   await music.play();
-   microphoneStatus("Запись идет. Музыка играет.");
-  } catch(e) {
-   microphoneStatus(
-    "Голос записывается, но музыка не включилась: " + e.message,
-    true
-   );
-  }
-
- } catch(e) {
-  microphoneStatus("Ошибка записи: "+e.message,true);
-  recorder=null;
- }
-}
-
-function stopRecording() {
- if(!recorder || recorder.state!=="recording") return;
-
- music.pause();
- recorder.stop();
- clearInterval(timer);
- timer=null;
-
- $("recordBtn").textContent="2. Петь под музыку";
- $("recordBtn").classList.remove("danger");
- microphoneStatus("Сохраняю запись...");
-}
-
-function clearRecording() {
- if(recordURL) URL.revokeObjectURL(recordURL);
- recordURL=null;
-
- $("playback").pause();
- $("playback").removeAttribute("src");
- $("playback").load();
-
- $("recordBox").classList.remove("show");
- $("recordTime").textContent="00:00";
- microphoneStatus("Запись удалена.");
-}
-
-function releaseMic() {
- connecting=false;
-
- if(recorder && recorder.state==="recording") {
-  stopRecording();
- }
-
- if(frame!==null) cancelAnimationFrame(frame);
- frame=null;
+ generation++;
+ cancelAnimationFrame(frame);
  analyser=null;
 
- if(stream) {
+ if(stream){
   stream.getTracks().forEach(t=>t.stop());
-  stream=null;
  }
 
- if(audioCtx) {
-  audioCtx.close().catch(()=>{});
-  audioCtx=null;
+ stream=null;
+
+ if(ctx){
+  ctx.close().catch(()=>{});
+  ctx=null;
  }
 
- $("meterFill").style.width="0";
- $("note").textContent="Голос не анализируется";
- $("micBtn").textContent="1. Подключить микрофон";
- $("recordBtn").disabled=true;
+ $('level').style.width='0%';
+ $('pitch').textContent='Микрофон выключен';
+ $('record').disabled=true;
 
- microphoneStatus("Микрофон выключен.");
+ micStatus('Микрофон выключен.');
+};
+
+function finish(){
+ if(rec?.state!=='recording')return;
+
+ audio.pause();
+ rec.stop();
+
+ clearInterval(clock);
+ clock=0;
+
+ $('record').textContent='2. Петь под музыку';
+ micStatus('Сохраняю запись...');
 }
 
-choose("bradley");
+$('record').onclick=async()=>{
+ if(rec?.state==='recording'){
+  finish();
+  return;
+ }
+
+ if(!stream){
+  micStatus('Сначала подключи микрофон.');
+  return;
+ }
+
+ if(!tracks[mode]){
+  micStatus('Сначала выбери музыку.');
+  return;
+ }
+
+ try{
+  parts=[];
+
+  const options=MediaRecorder.isTypeSupported?.('audio/mp4')
+   ?{mimeType:'audio/mp4'}
+   :{};
+
+  rec=new MediaRecorder(stream,options);
+
+  rec.ondataavailable=e=>{
+   if(e.data.size)parts.push(e.data);
+  };
+
+  rec.onstop=()=>{
+   const type=rec.mimeType||'audio/mp4';
+
+   if(recordURL){
+    URL.revokeObjectURL(recordURL);
+   }
+
+   recordURL=URL.createObjectURL(
+    new Blob(parts,{type})
+   );
+
+   $('listen').src=recordURL;
+   $('save').href=recordURL;
+
+   $('save').download='Shallow-my-voice.'+
+    (type.includes('mp4')?'m4a':'webm');
+
+   $('recorded').classList.add('show');
+
+   micStatus(
+    'Запись готова. Прослушай себя.'
+   );
+
+   rec=null;
+  };
+
+  rec.start(500);
+
+  recordStart=Date.now();
+
+  $('record').textContent=
+   '■ Остановить запись';
+
+  clock=setInterval(()=>{
+   $('clock').textContent=
+    fmt((Date.now()-recordStart)/1000);
+  },250);
+
+  try{
+   await audio.play();
+
+   micStatus(
+    'Запись идет, музыка играет.'
+   );
+  }catch(e){
+   micStatus(
+    'Голос записывается, но музыка не запустилась: '
+    +e.message
+   );
+  }
+ }catch(e){
+  micStatus('Ошибка записи: '+e.message);
+
+  if(rec?.state==='recording'){
+   finish();
+  }
+ }
+};
+
+choose('bradley');
+setMode('original');
 </script>
 </body>
 </html>
